@@ -1,0 +1,15 @@
+.container {
+  padding: 16px;
+}
+
+.folder_container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.image_container {
+  width: 200px;
+  height: 200px;
+  position: relative;
+}

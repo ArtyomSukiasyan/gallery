@@ -1,30 +1,25 @@
 import fs from "fs";
 import path from "path";
 import Image from "next/image";
+import "./global.css";
+import "./page.css";
 
 export default async function Home() {
   const folders = await getFolders();
 
   return (
-    <div>
+    <div className="container">
       {folders.map((folder, folderIndex) => (
         <div key={folderIndex}>
-          <h1>{folder.folderName}</h1>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
+          <h2>{folder.folderName}</h2>
+
+          <div className="folder_container">
             {folder.images.map((image, imageIndex) => (
-              <div
-                key={imageIndex}
-                style={{
-                  width: "200px",
-                  height: "200px",
-                  position: "relative",
-                }}
-              >
+              <div className="image_container" key={imageIndex}>
                 <Image
                   src={`/${folder.folderName}/${image}`}
                   alt={`Image ${imageIndex + 1}`}
-                  width={100}
-                  height={100}
+                  fill
                 />
               </div>
             ))}
