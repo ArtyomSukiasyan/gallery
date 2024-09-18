@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, useEffect, ChangeEvent } from "react";
+import createFolder from "../../helpers/createFolder";
+import getFolders from "../../helpers/getFolders";
+import uploadFiles from "../../helpers/uploadFiles";
 
 export default function Admin() {
   const [folders, setFolders] = useState<string[]>([]);
@@ -9,32 +12,28 @@ export default function Admin() {
   const [formData, setFormData] = useState<FormData | null>(null);
 
   useEffect(() => {
-    fetch("/api/folders")
-      .then((res) => res.json())
-      .then((data) => setFolders(data.folders))
-      .catch((err) => console.error("Failed to fetch folders", err));
+    const fetchFolders = async () => {
+      const folders = await getFolders();
+      setFolders(folders);
+    };
+
+    fetchFolders();
   }, []);
 
   const handleFolderChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setSelectedFolder(e.target.value);
   };
 
-  const handleFolderCreation = () => {
+  const handleFolderCreation = async () => {
     if (!newFolderName) {
       return;
     }
 
-    fetch("/api/folders", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ folderName: newFolderName }),
-    })
-      .then((res) => res.json())
-      .then(() => {
-        setFolders([...folders, newFolderName]);
-        setNewFolderName("");
-      })
-      .catch((err) => console.error("Failed to create folder", err));
+    const res = await createFolder(newFolderName);
+    
+    setFolders([...folders, newFolderName]);
+    setNewFolderName("");
+    alert(res);
   };
 
   const handleChangeImage = (e: ChangeEvent<HTMLInputElement>) => {
@@ -56,22 +55,8 @@ export default function Admin() {
       return;
     }
 
-    try {
-      const response = await fetch(`/api/upload?folder=${selectedFolder}`, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (response.ok) {
-        alert("Images uploaded successfully!");
-        setFormData(null);
-      } else {
-        alert("Failed to upload images. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error uploading images:", error);
-      alert("Failed to upload images. Please try again.");
-    }
+    await uploadFiles(selectedFolder, formData);
+    setFormData(null);
   };
 
   return (
