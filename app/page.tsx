@@ -1,52 +1,53 @@
-import fs from "fs";
-import path from "path";
+"use client";
 import Image from "next/image";
 import "./global.css";
 import "./page.css";
+import getFolders from "../helpers/getFolders";
+import { ChangeEvent, useEffect, useState } from "react";
+import getImagesByFolderName from "../helpers/getImages";
 
-export default async function Home() {
-  const folders = getFolderNames();
+export default function Home() {
+  const [folders, setFolders] = useState<string[]>([]);
+  const [selectedFolder, setSelectedFolder] = useState("");
+  const [images, setImages] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchFolders = async () => {
+      const folders = await getFolders();
+      setFolders(folders);
+    };
+
+    fetchFolders();
+  }, []);
+
+  const handleFolderChange = async (e: ChangeEvent<HTMLSelectElement>) => {
+    setSelectedFolder(e.target.value);
+    const images = await getImagesByFolderName(e.target.value);
+
+    setImages(images);
+  };
 
   return (
     <div className="container">
-      {folders.map((folder, folderIndex) => (
-        <div key={folderIndex}>
-          <h2>{folder}</h2>
-          <div className="folder_container">
-            {getImagesByFolder(folder).map((image, imageIndex) => (
-              <div className="image_container" key={imageIndex}>
-                <Image
-                  src={`/${folder}/${image}`}
-                  alt={`Image ${imageIndex + 1}`}
-                  fill
-                />
-              </div>
-            ))}
+      <select value={selectedFolder} onChange={handleFolderChange}>
+        <option value="">Select a folder</option>
+        {folders.map((folder, index) => (
+          <option key={index} value={folder}>
+            {folder}
+          </option>
+        ))}
+      </select>
+      <div className="folder_container">
+        {images.map((image, imageIndex) => (
+          <div className="image_container" key={imageIndex}>
+            <Image
+              src={`/${selectedFolder}/${image}`}
+              alt={`Image ${imageIndex + 1}`}
+              fill
+            />
           </div>
-          <div className="folder_container"></div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
-}
-
-const publicDirectory = path.join(process.cwd(), "public");
-
-function getFolderNames() {
-  const folderNames = fs
-    .readdirSync(publicDirectory)
-    .filter((file) =>
-      fs.statSync(path.join(publicDirectory, file)).isDirectory()
-    );
-
-  return folderNames;
-}
-
-function getImagesByFolder(folderName: string) {
-  const folderPath = path.join(publicDirectory, folderName);
-  const images = fs
-    .readdirSync(folderPath)
-    .filter((file) => /\.(png|jpg|jpeg|gif)$/.test(file));
-
-  return images;
 }
