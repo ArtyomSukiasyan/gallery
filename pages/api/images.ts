@@ -13,7 +13,7 @@ export default async function handler(
     const folderPath = path.join(publicDirectory, folderName);
     const images = fs
       .readdirSync(folderPath)
-      // .filter((file) => /\.(png|jpg|jpeg|gif)$/.test(file));
+      .filter((file) => /\.(png|jpg|jpeg|gif)$/.test(file));
 
     res.status(200).json({ images });
   }

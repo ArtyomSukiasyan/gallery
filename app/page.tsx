@@ -56,7 +56,7 @@ export default function Home() {
             onClick={() => handleImageClick(imageIndex)}
           >
             <Image
-              src={`/${selectedFolder}/${image}`}
+              src={`/gallery/${selectedFolder}/${image}`}
               alt={`Image ${imageIndex + 1}`}
               fill
             />
