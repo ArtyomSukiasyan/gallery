@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "My gallery",
-  description: "My gallery",
+  title: "Gallery | Artyom Sukiasyan (devchessplayer)",
+  description: "Image gallery of Artyom Sukiasyan since 2023",
 };
 
 export default function RootLayout({
