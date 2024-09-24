@@ -25,15 +25,16 @@ export default function Home() {
     setSelectedFolder(e.target.value);
     const images = await getImagesByFolderName(e.target.value);
     setImages(images);
-    setClickedIndex(null); // Reset clicked image on folder change
+    setClickedIndex(null);
   };
 
   const handleImageClick = (index: number) => {
     if (clickedIndex === index) {
-      setClickedIndex(null); // Deselect image if clicked again
-    } else {
-      setClickedIndex(index); // Set clicked image
+      setClickedIndex(null);
+      return;
     }
+    
+    setClickedIndex(index);
   };
 
   return (
@@ -59,6 +60,7 @@ export default function Home() {
               src={`/gallery/${selectedFolder}/${image}`}
               alt={`Image ${imageIndex + 1}`}
               fill
+              sizes="max-width: 768px"
             />
           </div>
         ))}
