@@ -57,6 +57,29 @@ select:focus {
   opacity: 0.9;
 }
 
+.image_container.full-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+  transform: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.image_container.full-screen img {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
+
+.image_container.full-screen:hover {
+  cursor: zoom-out;
+}
+
 @media (max-width: 768px) {
   .folder_container {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));

@@ -10,6 +10,7 @@ export default function Home() {
   const [folders, setFolders] = useState<string[]>([]);
   const [selectedFolder, setSelectedFolder] = useState("");
   const [images, setImages] = useState<string[]>([]);
+  const [clickedIndex, setClickedIndex] = useState<number | null>(null); // Track clicked image index
 
   useEffect(() => {
     const fetchFolders = async () => {
@@ -23,12 +24,20 @@ export default function Home() {
   const handleFolderChange = async (e: ChangeEvent<HTMLSelectElement>) => {
     setSelectedFolder(e.target.value);
     const images = await getImagesByFolderName(e.target.value);
-
     setImages(images);
+    setClickedIndex(null); // Reset clicked image on folder change
+  };
+
+  const handleImageClick = (index: number) => {
+    if (clickedIndex === index) {
+      setClickedIndex(null); // Deselect image if clicked again
+    } else {
+      setClickedIndex(index); // Set clicked image
+    }
   };
 
   return (
-    <div className="container">
+    <div className={`container ${clickedIndex !== null ? "no-scroll" : ""}`}>
       <select value={selectedFolder} onChange={handleFolderChange}>
         <option value="">Select a folder</option>
         {folders.map((folder, index) => (
@@ -39,7 +48,13 @@ export default function Home() {
       </select>
       <div className="folder_container">
         {images.map((image, imageIndex) => (
-          <div className="image_container" key={imageIndex}>
+          <div
+            className={`image_container ${
+              clickedIndex === imageIndex ? "full-screen" : ""
+            }`}
+            key={imageIndex}
+            onClick={() => handleImageClick(imageIndex)}
+          >
             <Image
               src={`/${selectedFolder}/${image}`}
               alt={`Image ${imageIndex + 1}`}
