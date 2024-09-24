@@ -14,7 +14,7 @@ interface IParsedPart {
 }
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  const publicDirectory = path.join(process.cwd(), "public");
+  const publicDirectory = path.join(process.cwd(), "public", "gallery");
 
   if (req.method === "POST") {
     const folder = req.query.folder as string;
