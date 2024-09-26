@@ -11,6 +11,8 @@ export default function Admin() {
   const [selectedFolder, setSelectedFolder] = useState("");
   const [newFolderName, setNewFolderName] = useState("");
   const [formData, setFormData] = useState<FormData | null>(null);
+  const [currentPass, setCurrentPass] = useState("");
+  const [isCorrectPass, setIsCorrectPass] = useState(false);
 
   useEffect(() => {
     const fetchFolders = async () => {
@@ -59,6 +61,24 @@ export default function Admin() {
     await uploadFiles(selectedFolder, formData);
     setFormData(null);
   };
+
+  const getCurrentPass = (e: ChangeEvent<HTMLInputElement>) => {
+    setCurrentPass(e.target.value);
+  };
+
+  const checkPass = () => {
+    setIsCorrectPass(currentPass === process.env.NEXT_PUBLIC_ADMIN_PASS);
+  };
+
+  if (!isCorrectPass) {
+    return (
+      <>
+        <label>Type pass</label>
+        <input type="text" onChange={getCurrentPass} />
+        <button onClick={checkPass}>Check</button>
+      </>
+    );
+  }
 
   return (
     <div>
