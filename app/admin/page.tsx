@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useEffect, ChangeEvent } from "react";
 import createFolder from "../../helpers/createFolder";
 import getFolders from "../../helpers/getFolders";
@@ -30,7 +31,7 @@ export default function Admin() {
     }
 
     const res = await createFolder(newFolderName);
-    
+
     setFolders([...folders, newFolderName]);
     setNewFolderName("");
     alert(res);
@@ -62,7 +63,7 @@ export default function Admin() {
   return (
     <div>
       <h1>Admin Panel</h1>
-
+      <Link href={"/"}>Main page</Link>
       <h2>Select Folder</h2>
       <select value={selectedFolder} onChange={handleFolderChange}>
         <option value="">Select a folder</option>
