@@ -9,8 +9,8 @@ import getImagesByFolderName from "../helpers/getImages";
 export default function Home() {
   const [folders, setFolders] = useState<string[]>([]);
   const [selectedFolder, setSelectedFolder] = useState("");
-  const [images, setImages] = useState<string[]>([]);
-  const [clickedIndex, setClickedIndex] = useState<number | null>(null); // Track clicked image index
+  const [mediaFiles, setMediaFiles] = useState<string[]>([]);
+  const [clickedIndex, setClickedIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchFolders = async () => {
@@ -23,18 +23,22 @@ export default function Home() {
 
   const handleFolderChange = async (e: ChangeEvent<HTMLSelectElement>) => {
     setSelectedFolder(e.target.value);
-    const images = await getImagesByFolderName(e.target.value);
-    setImages(images);
+    const mediaFiles = await getImagesByFolderName(e.target.value);
+    setMediaFiles(mediaFiles);
     setClickedIndex(null);
   };
 
-  const handleImageClick = (index: number) => {
+  const handleMediaClick = (index: number) => {
     if (clickedIndex === index) {
       setClickedIndex(null);
       return;
     }
-    
     setClickedIndex(index);
+  };
+
+  const isVideo = (file: string) => {
+    const videoExtensions = [".mp4", ".webm", ".ogg"];
+    return videoExtensions.some((ext) => file.endsWith(ext));
   };
 
   return (
@@ -48,20 +52,29 @@ export default function Home() {
         ))}
       </select>
       <div className="folder_container">
-        {images.map((image, imageIndex) => (
+        {mediaFiles.map((file, index) => (
           <div
-            className={`image_container ${
-              clickedIndex === imageIndex ? "full-screen" : ""
+            className={`media_container ${
+              clickedIndex === index ? "full-screen" : ""
             }`}
-            key={imageIndex}
-            onClick={() => handleImageClick(imageIndex)}
+            key={index}
+            onClick={() => handleMediaClick(index)}
           >
-            <Image
-              src={`/gallery/${selectedFolder}/${image}`}
-              alt={`Image ${imageIndex + 1}`}
-              fill
-              sizes="max-width: 768px"
-            />
+            {isVideo(file) ? (
+              <video
+                src={`/gallery/${selectedFolder}/${file}`}
+                controls
+                preload="none"
+                className="video"
+              />
+            ) : (
+              <Image
+                src={`/gallery/${selectedFolder}/${file}`}
+                alt={`Media ${index + 1}`}
+                fill
+                sizes="max-width: 768px"
+              />
+            )}
           </div>
         ))}
       </div>
