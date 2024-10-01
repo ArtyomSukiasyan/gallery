@@ -5,12 +5,14 @@ import "./page.css";
 import getFolders from "../helpers/getFolders";
 import { ChangeEvent, useEffect, useState } from "react";
 import getImagesByFolderName from "../helpers/getImages";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [folders, setFolders] = useState<string[]>([]);
-  const [selectedFolder, setSelectedFolder] = useState("");
+  const [selectedFolder, setSelectedFolder] = useState<string>("");
   const [mediaFiles, setMediaFiles] = useState<string[]>([]);
   const [clickedIndex, setClickedIndex] = useState<number | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchFolders = async () => {
@@ -21,11 +23,26 @@ export default function Home() {
     fetchFolders();
   }, []);
 
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const folderFromQuery = urlParams.get("folder");
+    if (folderFromQuery) {
+      setSelectedFolder(folderFromQuery);
+      loadImages(folderFromQuery);
+    }
+  }, []);
+
   const handleFolderChange = async (e: ChangeEvent<HTMLSelectElement>) => {
-    setSelectedFolder(e.target.value);
-    const mediaFiles = await getImagesByFolderName(e.target.value);
-    setMediaFiles(mediaFiles);
+    const selectedFolderName = e.target.value;
+    setSelectedFolder(selectedFolderName);
+    router.push(`/?folder=${selectedFolderName}`);
+    loadImages(selectedFolderName);
     setClickedIndex(null);
+  };
+
+  const loadImages = async (folder: string) => {
+    const mediaFiles = await getImagesByFolderName(folder);
+    setMediaFiles(mediaFiles);
   };
 
   const handleMediaClick = (index: number) => {
