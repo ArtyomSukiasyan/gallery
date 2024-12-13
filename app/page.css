@@ -22,7 +22,7 @@ select:focus {
   box-shadow: 0 0 5px rgba(0, 112, 243, 0.5);
 }
 
-.folder_container {
+.album_container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   grid-gap: 20px;
@@ -84,7 +84,7 @@ select:focus {
 }
 
 @media (max-width: 768px) {
-  .folder_container {
+  .album_container {
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   }
 

@@ -4,16 +4,13 @@ I have been doing road trips (and not only) since 2018, when I bought my first c
 
 For ease of display, I wrote a simple website.
 
-The list of photos is also available in my [Google Drive](https://drive.google.com/drive/u/0/folders/1AS5F6sgSSffWyrvnYlLq9EKoyQ9w_mIQ)
-
 ## Tech Stack
 - NextJS
-- File system as a database
 
 ## How to setup
 - git clone https://github.com/ArtyomSukiasyan/gallery.git
 - cd gallery
 - npm i
-- create `.env` file and add pass
+- create `.env` file and add your google photo credential (list is available in .env.example)
 - npm run dev
 

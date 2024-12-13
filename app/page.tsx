@@ -1,47 +1,50 @@
 "use client";
+
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { ChangeEvent, useEffect, useState } from "react";
+import getAlbums from "../helpers/getAlbums";
+import getPhotosByAlbum from "../helpers/getPhotosByAlbum";
 import "./global.css";
 import "./page.css";
-import getFolders from "../helpers/getFolders";
-import { ChangeEvent, useEffect, useState } from "react";
-import getImagesByFolderName from "../helpers/getImages";
-import { useRouter } from "next/navigation";
+import { IAlbum } from "../models/album";
+import { IPhoto } from "../models/photo";
 
 export default function Home() {
-  const [folders, setFolders] = useState<string[]>([]);
-  const [selectedFolder, setSelectedFolder] = useState<string>("");
-  const [mediaFiles, setMediaFiles] = useState<string[]>([]);
+  const [albums, setAlbums] = useState<IAlbum[]>([]);
+  const [selectedAlbum, setSelectedAlbum] = useState<string>("");
+  const [mediaFiles, setMediaFiles] = useState<IPhoto[]>([]);
   const [clickedIndex, setClickedIndex] = useState<number | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    const fetchFolders = async () => {
-      const folders = await getFolders();
-      setFolders(folders);
+    const fetchAlbums = async () => {
+      const albumsInGoogle = await getAlbums();
+      setAlbums(albumsInGoogle);
     };
 
-    fetchFolders();
+    fetchAlbums();
   }, []);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const folderFromQuery = urlParams.get("folder");
-    if (folderFromQuery) {
-      setSelectedFolder(folderFromQuery);
-      loadImages(folderFromQuery);
+    const albumFromQuery = urlParams.get("album");
+    if (albumFromQuery) {
+      setSelectedAlbum(albumFromQuery);
+      loadImages(albumFromQuery);
     }
   }, []);
 
-  const handleFolderChange = async (e: ChangeEvent<HTMLSelectElement>) => {
-    const selectedFolderName = e.target.value;
-    setSelectedFolder(selectedFolderName);
-    router.push(`/?folder=${selectedFolderName}`);
-    loadImages(selectedFolderName);
+  const handleAlbumChange = async (e: ChangeEvent<HTMLSelectElement>) => {
+    const selectedAlbum = e.target.value;
+    setSelectedAlbum(selectedAlbum);
+    router.push(`/?album=${selectedAlbum}`);
+    loadImages(selectedAlbum);
     setClickedIndex(null);
   };
 
-  const loadImages = async (folder: string) => {
-    const mediaFiles = await getImagesByFolderName(folder);
+  const loadImages = async (albumId: string) => {
+    const mediaFiles = await getPhotosByAlbum(albumId);
     setMediaFiles(mediaFiles);
   };
 
@@ -53,22 +56,21 @@ export default function Home() {
     setClickedIndex(index);
   };
 
-  const isVideo = (file: string) => {
-    const videoExtensions = [".mp4", ".webm", ".ogg"];
-    return videoExtensions.some((ext) => file.endsWith(ext));
+  const isVideo = (file: { mimeType: string }) => {
+    return file.mimeType.startsWith("video/");
   };
 
   return (
     <div className={`container ${clickedIndex !== null ? "no-scroll" : ""}`}>
-      <select value={selectedFolder} onChange={handleFolderChange}>
-        <option value="">Select a folder</option>
-        {folders.map((folder, index) => (
-          <option key={index} value={folder}>
-            {folder}
+      <select value={selectedAlbum} onChange={handleAlbumChange}>
+        <option value="">Select an album</option>
+        {albums.map(({ id, title }) => (
+          <option key={id} value={id}>
+            {title}
           </option>
         ))}
       </select>
-      <div className="folder_container">
+      <div className="album_container">
         {mediaFiles.map((file, index) => (
           <div
             className={`media_container ${
@@ -79,17 +81,21 @@ export default function Home() {
           >
             {isVideo(file) ? (
               <video
-                src={`/gallery/${selectedFolder}/${file}`}
+                src={`${file.baseUrl}=dv`}
                 controls
                 preload="none"
                 className="video"
+                width={320}
+                height={320}
               />
             ) : (
               <Image
-                src={`/gallery/${selectedFolder}/${file}`}
-                alt={`Media ${index + 1}`}
-                fill
-                sizes="max-width: 768px"
+                key={file.id}
+                src={file.baseUrl}
+                alt={file.filename}
+                width={320}
+                height={320}
+                style={{ margin: "10px" }}
               />
             )}
           </div>
