@@ -1,23 +1,25 @@
 "use client";
-import Image from "next/image";
+
+import { useRouter } from "next/navigation";
+import { ChangeEvent, useEffect, useState } from "react";
+import getAlbums from "../helpers/getAlbums";
+import getPhotosByAlbum from "../helpers/getPhotosByAlbum";
 import "./global.css";
 import "./page.css";
-import getFolders from "../helpers/getFolders";
-import { ChangeEvent, useEffect, useState } from "react";
-import getImagesByFolderName from "../helpers/getImages";
-import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const [folders, setFolders] = useState<string[]>([]);
+  const [albums, setAlbums] = useState<{ id: string; title: string }[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<string>("");
-  const [mediaFiles, setMediaFiles] = useState<string[]>([]);
+  const [mediaFiles, setMediaFiles] = useState<
+    { id: string; baseUrl: string; filename: string; mimeType: string }[]
+  >([]);
   const [clickedIndex, setClickedIndex] = useState<number | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     const fetchFolders = async () => {
-      const folders = await getFolders();
-      setFolders(folders);
+      const folders = await getAlbums();
+      setAlbums(folders);
     };
 
     fetchFolders();
@@ -40,8 +42,8 @@ export default function Home() {
     setClickedIndex(null);
   };
 
-  const loadImages = async (folder: string) => {
-    const mediaFiles = await getImagesByFolderName(folder);
+  const loadImages = async (albumId: string) => {
+    const mediaFiles = await getPhotosByAlbum(albumId);
     setMediaFiles(mediaFiles);
   };
 
@@ -53,18 +55,17 @@ export default function Home() {
     setClickedIndex(index);
   };
 
-  const isVideo = (file: string) => {
-    const videoExtensions = [".mp4", ".webm", ".ogg"];
-    return videoExtensions.some((ext) => file.endsWith(ext));
+  const isVideo = (file: { mimeType: string }) => {
+    return file.mimeType.startsWith("video/");
   };
 
   return (
     <div className={`container ${clickedIndex !== null ? "no-scroll" : ""}`}>
       <select value={selectedFolder} onChange={handleFolderChange}>
         <option value="">Select a folder</option>
-        {folders.map((folder, index) => (
-          <option key={index} value={folder}>
-            {folder}
+        {albums.map((album) => (
+          <option key={album.id} value={album.id}>
+            {album.title}
           </option>
         ))}
       </select>
@@ -79,17 +80,21 @@ export default function Home() {
           >
             {isVideo(file) ? (
               <video
-                src={`/gallery/${selectedFolder}/${file}`}
+                src={`${file.baseUrl}=dv`}
                 controls
                 preload="none"
                 className="video"
+                width={200}
+                height={200}
               />
             ) : (
-              <Image
-                src={`/gallery/${selectedFolder}/${file}`}
-                alt={`Media ${index + 1}`}
-                fill
-                sizes="max-width: 768px"
+              <img
+                key={file.id}
+                src={`${file.baseUrl}=w400-h400`}
+                alt={file.filename}
+                width={200}
+                height={200}
+                style={{ margin: "10px" }}
               />
             )}
           </div>
