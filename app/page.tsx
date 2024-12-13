@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 import getAlbums from "../helpers/getAlbums";
@@ -62,7 +63,7 @@ export default function Home() {
   return (
     <div className={`container ${clickedIndex !== null ? "no-scroll" : ""}`}>
       <select value={selectedFolder} onChange={handleFolderChange}>
-        <option value="">Select a folder</option>
+        <option value="">Select an album</option>
         {albums.map((album) => (
           <option key={album.id} value={album.id}>
             {album.title}
@@ -84,16 +85,16 @@ export default function Home() {
                 controls
                 preload="none"
                 className="video"
-                width={200}
-                height={200}
+                width={320}
+                height={320}
               />
             ) : (
-              <img
+              <Image
                 key={file.id}
-                src={`${file.baseUrl}=w400-h400`}
+                src={file.baseUrl}
                 alt={file.filename}
-                width={200}
-                height={200}
+                width={320}
+                height={320}
                 style={{ margin: "10px" }}
               />
             )}
