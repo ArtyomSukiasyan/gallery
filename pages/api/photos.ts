@@ -1,22 +1,22 @@
 import { getAccessToken } from "../../lib/refreshToken";
 
+const photosUrl = "https://photoslibrary.googleapis.com/v1/mediaItems:search";
+
 export default async function handler(req: any, res: any) {
   const accessToken = await getAccessToken();
 
   if (req.method === "GET") {
     const albumId = req.query.album as string;
 
-    const url = "https://photoslibrary.googleapis.com/v1/mediaItems:search";
     try {
-      const response = await fetch(url, {
+      const response = await fetch(photosUrl, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          albumId: albumId,
-          pageSize: 50,
+          albumId,
         }),
       });
 

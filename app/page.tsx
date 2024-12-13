@@ -7,39 +7,39 @@ import getAlbums from "../helpers/getAlbums";
 import getPhotosByAlbum from "../helpers/getPhotosByAlbum";
 import "./global.css";
 import "./page.css";
+import { IAlbum } from "../models/album";
+import { IPhoto } from "../models/photo";
 
 export default function Home() {
-  const [albums, setAlbums] = useState<{ id: string; title: string }[]>([]);
-  const [selectedFolder, setSelectedFolder] = useState<string>("");
-  const [mediaFiles, setMediaFiles] = useState<
-    { id: string; baseUrl: string; filename: string; mimeType: string }[]
-  >([]);
+  const [albums, setAlbums] = useState<IAlbum[]>([]);
+  const [selectedAlbum, setSelectedAlbum] = useState<string>("");
+  const [mediaFiles, setMediaFiles] = useState<IPhoto[]>([]);
   const [clickedIndex, setClickedIndex] = useState<number | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    const fetchFolders = async () => {
-      const folders = await getAlbums();
-      setAlbums(folders);
+    const fetchAlbums = async () => {
+      const albumsInGoogle = await getAlbums();
+      setAlbums(albumsInGoogle);
     };
 
-    fetchFolders();
+    fetchAlbums();
   }, []);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const folderFromQuery = urlParams.get("folder");
-    if (folderFromQuery) {
-      setSelectedFolder(folderFromQuery);
-      loadImages(folderFromQuery);
+    const albumFromQuery = urlParams.get("album");
+    if (albumFromQuery) {
+      setSelectedAlbum(albumFromQuery);
+      loadImages(albumFromQuery);
     }
   }, []);
 
-  const handleFolderChange = async (e: ChangeEvent<HTMLSelectElement>) => {
-    const selectedFolderName = e.target.value;
-    setSelectedFolder(selectedFolderName);
-    router.push(`/?folder=${selectedFolderName}`);
-    loadImages(selectedFolderName);
+  const handleAlbumChange = async (e: ChangeEvent<HTMLSelectElement>) => {
+    const selectedAlbum = e.target.value;
+    setSelectedAlbum(selectedAlbum);
+    router.push(`/?album=${selectedAlbum}`);
+    loadImages(selectedAlbum);
     setClickedIndex(null);
   };
 
@@ -62,11 +62,11 @@ export default function Home() {
 
   return (
     <div className={`container ${clickedIndex !== null ? "no-scroll" : ""}`}>
-      <select value={selectedFolder} onChange={handleFolderChange}>
+      <select value={selectedAlbum} onChange={handleAlbumChange}>
         <option value="">Select an album</option>
-        {albums.map((album) => (
-          <option key={album.id} value={album.id}>
-            {album.title}
+        {albums.map(({ id, title }) => (
+          <option key={id} value={id}>
+            {title}
           </option>
         ))}
       </select>

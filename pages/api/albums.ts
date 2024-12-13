@@ -1,12 +1,18 @@
+import { NextApiRequest, NextApiResponse } from "next";
 import { getAccessToken } from "../../lib/refreshToken";
+import { IAlbum } from "../../models/album";
 
-export default async function handler(req: any, res: any) {
+const albumUrl = "https://photoslibrary.googleapis.com/v1/albums";
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   if (req.method === "GET") {
     const accessToken = await getAccessToken();
 
-    const url = "https://photoslibrary.googleapis.com/v1/albums";
     try {
-      const response = await fetch(url, {
+      const response = await fetch(albumUrl, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -19,12 +25,10 @@ export default async function handler(req: any, res: any) {
       }
 
       const data = await response.json();
-      const dataToResponse = data.albums.map(
-        ({ id, title }: { id: string; title: string }) => ({
-          id,
-          title,
-        })
-      );
+      const dataToResponse = data.albums.map(({ id, title }: IAlbum) => ({
+        id,
+        title,
+      }));
       res.status(200).json(dataToResponse);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
