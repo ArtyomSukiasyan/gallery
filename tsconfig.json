@@ -20,7 +20,8 @@
         "name": "next"
       }
     ],
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "target": "ES2017"
   },
   "include": [
     "next-env.d.ts",
