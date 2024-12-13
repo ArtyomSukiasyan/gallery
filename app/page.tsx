@@ -70,7 +70,7 @@ export default function Home() {
           </option>
         ))}
       </select>
-      <div className="folder_container">
+      <div className="album_container">
         {mediaFiles.map((file, index) => (
           <div
             className={`media_container ${

@@ -1,4 +1,4 @@
-export default async function getImagesByFolderName(albumId: string) {
+export default async function getImagesByAlbum(albumId: string) {
   if (!albumId) {
     return [];
   }
@@ -9,7 +9,7 @@ export default async function getImagesByFolderName(albumId: string) {
 
     return data;
   } catch (err) {
-    console.error("Failed to fetch folders", err);
+    console.error("Failed to fetch photos", err);
     return [];
   }
 }
